@@ -9,19 +9,19 @@ export type NewUser = {
 };
 
 export type User = {
-  fullname: string;
+  full_name: string;
   email: string;
   phone_number: string;
   nationality: string | null;
   password: string;
   role: UserRole;
-  birthdate: string;
+  date_of_birth: string;
   refresh_token?: string;
 };
 
 export type UpdateUser = {
-    fullname: string;
-    birthdate: string;
+    full_name: string;
+    date_of_birth: string;
     avatarImg: string;
     userId: number;
     phone_number: string;

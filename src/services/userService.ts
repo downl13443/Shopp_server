@@ -22,7 +22,7 @@ export const getUserById = async (userId: number): Promise<User | undefined> => 
 export const updateUserById = async (user: UpdateUser): Promise<UpdateUser | undefined>  => {
     const result = await pool.query(
         'UPDATE app_user SET full_name = $1, phone_number = $2, nationality = $3, date_of_birth = $4, profile_img = $5, updated_at = NOW() WHERE id = $6 RETURNING id, full_name, phone_number, nationality, date_of_birth, profile_img',
-        [user.fullname, user.phone_number, user.nationality, user.birthdate, user.avatarImg, user.userId]
+        [user.full_name, user.phone_number, user.nationality, user.date_of_birth, user.avatarImg, user.userId]
     );
     return result.rows[0];
 };

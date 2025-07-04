@@ -15,20 +15,32 @@ import {
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import parsePhoneNumberFromString from "libphonenumber-js";
+import { parse } from "path";
 
 
 export const registerUser = async (req: Request, res: Response) => {
   const { email, phone_number, password, role } = req.body;
   const nationality: string | null = parsePhoneNumberFromString(phone_number)?.country ?? null;
+  
+  const phone_number_num = parsePhoneNumberFromString(phone_number);
+  
+  if (!phone_number_num || !phone_number_num.isValid()) {
+    console.error("Invalid phone number format:", phone_number_num);
+    res.status(400).json({ error: "Invalid phone number format" });
+    return;
+  }
+
+  const formattedPhoneNumber = phone_number_num.formatInternational().toString();
+  const safePhone = formattedPhoneNumber.replace(/\s+/g, ' ').trim();
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await createUser({
       email,
-      phone_number,
+      phone_number: safePhone,
       password: hashedPassword,
       role,
-      nationality,
+      nationality
     });
     res.status(201).json(newUser);
   } catch (err) {
@@ -71,16 +83,16 @@ export const updateProfile = async (
       res.status(400).json({ error: "Invalid or missing identifier" });
       return;
   }
-  const { fullname, phone_number, email, birthdate, avatarImg } = req.body;
+  const { full_name, phone_number, email, date_of_birth, avatarImg } = req.body;
   const nationality: string | null = parsePhoneNumberFromString(phone_number)?.country ?? null;
 
   try {
     const updatedUser = await updateUserById({
-      fullname,
+      full_name,
       nationality,
       email,
       phone_number,
-      birthdate,
+      date_of_birth,
       avatarImg,
       userId: req.user?.id,
     });
